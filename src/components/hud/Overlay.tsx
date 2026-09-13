@@ -187,6 +187,7 @@ export function Overlay() {
           </button>
           <p className="hidden font-mono text-xs text-subtle sm:block">
             {fmtPct(snapshot.hedonic)} hedonic · {daHz.toFixed(1)} Hz PAM · drag to orbit
+            <span className="text-subtle"> · observer aurora, unseen by the fly</span>
           </p>
         </div>
       </footer>

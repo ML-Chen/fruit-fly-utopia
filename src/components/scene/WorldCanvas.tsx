@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { BrainCloud, PathwayRibbons } from "@/components/brain/BrainCloud";
 import { Arena } from "@/components/fly/Arena";
 import { FruitFly } from "@/components/fly/FruitFly";
+import { Backdrop } from "@/components/scene/Backdrop";
 import { Lights } from "@/components/scene/Lights";
 import type { Meta, Somata } from "@/lib/brain/load-somata";
 import { publishSnapshot, useProtocol } from "@/store/protocol";
@@ -58,7 +59,7 @@ function SimAndCamera() {
       autoRotate={autoRotate}
       autoRotateSpeed={0.35}
       minDistance={1.05}
-      maxDistance={14}
+      maxDistance={22}
       maxPolarAngle={Math.PI * 0.49}
       target={[0.2, 0.32, 0.05]}
     />
@@ -67,8 +68,10 @@ function SimAndCamera() {
 
 export function WorldCanvas({ somata, meta }: { somata: Somata; meta: Meta }) {
   const viewMode = useProtocol((s) => s.viewMode);
+  const stimulus = useProtocol((s) => s.stimulus);
   const showFly = viewMode !== "brain";
   const showBrain = viewMode !== "fly";
+  const amp = stimulus === "hedonium" ? 1.35 : stimulus === "doomscroll" ? 1.15 : 1;
 
   return (
     <Canvas
@@ -78,8 +81,9 @@ export function WorldCanvas({ somata, meta }: { somata: Somata; meta: Meta }) {
       gl={{ antialias: true, alpha: false }}
       camera={{ position: [1.85, 1.2, 2.65], fov: 38, near: 0.08, far: 80 }}
     >
-      <color attach="background" args={["#0b0c0e"]} />
-      <fog attach="fog" args={["#0b0c0e", 8, 18]} />
+      <color attach="background" args={["#090a10"]} />
+      <fog attach="fog" args={["#12131a", 14, 32]} />
+      <Backdrop amp={amp} />
       <Lights />
       <SimAndCamera />
       <group visible={showFly}>
@@ -97,9 +101,9 @@ export function WorldCanvas({ somata, meta }: { somata: Somata; meta: Meta }) {
             [-0.9, 0.95, -0.1],
             [-2.15, 1.45, -0.45],
           ]}
-          color="#3a3b40"
+          color="#6a7088"
           transparent
-          opacity={0.4}
+          opacity={0.45}
           lineWidth={1}
         />
       )}
