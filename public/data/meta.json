@@ -1,0 +1,182 @@
+{
+  "source": "MaleCNS v1.0",
+  "attribution": "HHMI Janelia FlyEM, Google Research, University of Cambridge, MRC LMB",
+  "license": "CC-BY",
+  "paper": "Sexual dimorphism in the complete connectome of the Drosophila male central nervous system (Cell, 2026)",
+  "url": "https://male-cns.janelia.org/",
+  "notes": {
+    "sugarBitterTasteOlfactory": "Labellar GRNs and olfactory receptor neurons have somata outside the CNS volume; their positions are placed at SEZ / antennal-lobe entry zones.",
+    "viz": "Stratified soma subsample plus the complete reward circuit (Kenyon cells, PAM/PPL DANs, MBONs, OA, MN9)."
+  },
+  "counts": {
+    "bodies": 211577,
+    "somata": 145848,
+    "publishedNeurons": 166691,
+    "publishedSynapses": 125000000,
+    "viz": 23842,
+    "groups": {
+      "optic": 105251,
+      "central": 74541,
+      "vnc": 20971,
+      "kenyon": 4064,
+      "pam": 316,
+      "ppl1": 16,
+      "ppl2": 8,
+      "mbon": 97,
+      "sugar": 128,
+      "bitter": 75,
+      "taste": 1225,
+      "oa": 37,
+      "endo": 78,
+      "mn9": 2,
+      "motor": 813,
+      "olf": 2639,
+      "other_sensory": 0,
+      "desc": 1316
+    },
+    "vizGroups": {
+      "optic": 9000,
+      "central": 5000,
+      "vnc": 3500,
+      "kenyon": 4050,
+      "pam": 316,
+      "ppl1": 16,
+      "ppl2": 8,
+      "mbon": 96,
+      "sugar": 128,
+      "bitter": 75,
+      "taste": 240,
+      "oa": 37,
+      "endo": 74,
+      "mn9": 2,
+      "motor": 200,
+      "olf": 700,
+      "other_sensory": 0,
+      "desc": 400
+    }
+  },
+  "centroids": {
+    "optic": [
+      -0.012978817777777775,
+      -0.08186805333333334,
+      0.1766425688888889,
+      9000
+    ],
+    "central": [
+      0.027712832000000003,
+      0.44860649599999997,
+      -0.6992664480000002,
+      5000
+    ],
+    "vnc": [
+      0.14205977142857143,
+      -5.457063314285715,
+      2.0428381485714286,
+      3500
+    ],
+    "kenyon": [
+      -0.04986836543209875,
+      -0.1642880790123457,
+      -1.5774729679012347,
+      4050
+    ],
+    "pam": [
+      -0.024546835443037984,
+      1.4850650632911393,
+      -1.2339620253164558,
+      316
+    ],
+    "ppl1": [
+      0.07858000000000005,
+      -0.12953,
+      -1.3684450000000001,
+      16
+    ],
+    "ppl2": [
+      0.1537,
+      -0.04823000000000001,
+      0.01936000000000001,
+      8
+    ],
+    "mbon": [
+      -0.03199666666666665,
+      0.7704241666666668,
+      -1.0801375,
+      96
+    ],
+    "sugar": [
+      0.002754592089252196,
+      1.257890993009249,
+      0.6851703243738294,
+      128
+    ],
+    "bitter": [
+      -2.448714313454651e-05,
+      1.2721924044324664,
+      0.762259723352859,
+      75
+    ],
+    "taste": [
+      -0.004435707050315715,
+      1.234830106973995,
+      0.8131870137797802,
+      240
+    ],
+    "oa": [
+      0.031329729729729736,
+      0.990611891891892,
+      0.30941837837837843,
+      37
+    ],
+    "endo": [
+      -0.019127567567567578,
+      0.5500400000000001,
+      -1.5447567567567568,
+      74
+    ],
+    "mn9": [
+      0.00763999999999998,
+      1.29704,
+      0.54024,
+      2
+    ],
+    "motor": [
+      0.1187724,
+      -4.9892351999999995,
+      1.6811528000000004,
+      200
+    ],
+    "olf": [
+      -0.005251983746601265,
+      0.8487047101958825,
+      0.1646639683934703,
+      700
+    ],
+    "desc": [
+      0.028161000000000002,
+      0.2554968,
+      0.3524730000000001,
+      400
+    ]
+  },
+  "groups": [
+    "optic",
+    "central",
+    "vnc",
+    "kenyon",
+    "pam",
+    "ppl1",
+    "ppl2",
+    "mbon",
+    "sugar",
+    "bitter",
+    "taste",
+    "oa",
+    "endo",
+    "mn9",
+    "motor",
+    "olf",
+    "other_sensory",
+    "desc"
+  ]
+}
