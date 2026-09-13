@@ -6,7 +6,7 @@ export type Stimulus =
   | "ethanol"
   | "cocaine"
   | "doomscroll"
-  | "hedonium";
+  | "utopia";
 
 export type BrainState = {
   sugar: number;
@@ -64,10 +64,10 @@ export const ENVIRONMENTS: EnvironmentInfo[] = [
     blurb: "The screen fills the compound eyes. Kenyon cells track novelty; when that prediction error dies, the fly skips — a locomotor 'scroll'.",
   },
   {
-    id: "hedonium",
-    label: "Hedonium",
-    kicker: "Unbounded reward",
-    blurb: "Every appetitive channel clamped on; aversive PPL1 silenced. The operational ceiling of this brain’s reward circuit.",
+    id: "utopia",
+    label: "Utopia",
+    kicker: "Clamp",
+    blurb: "Every appetitive channel clamped on; aversive PPL1 silenced. The operational ceiling of this brain’s reward circuit — not a pleasure-matter. Flies don’t have that.",
   },
 ];
 
@@ -159,7 +159,7 @@ export function stepEngine(engine: Engine, dt: number, stimulus: Stimulus, inten
   if (stimulus === "sugar") {
     iSugar = 0.92 * I;
     locoBias = 0.18;
-  } else if (stimulus === "hedonium") {
+  } else if (stimulus === "utopia") {
     iSugar = 1.0 * I;
     iOa = 0.95 * I;
     iPam = 1.0 * I;
@@ -325,7 +325,7 @@ export function flyDrive(stimulus: Stimulus, s: BrainState, stimElapsed: number)
       collapsed: 0,
     };
   }
-  if (stimulus === "hedonium") {
+  if (stimulus === "utopia") {
     return {
       walkSpeed: s.mn9 > 0.5 ? 0.02 : 0.45,
       turnNoise: 0.12,
@@ -354,7 +354,7 @@ export function behaviorLabel(stimulus: Stimulus, s: BrainState, stimElapsed: nu
   if (stimulus === "cocaine") return "Hypermotor";
   if (stimulus === "ethanol") return "Buzzed";
   if (stimulus === "doomscroll") return s.novelty < 0.22 ? "Scrolling" : "Watching";
-  if (d.per > 0.55) return stimulus === "hedonium" ? "Locked PER" : "Drinking";
+  if (d.per > 0.55) return stimulus === "utopia" ? "Locked PER" : "Drinking";
   if (d.groom > 0.4) return "Grooming";
   if (d.walkSpeed > 0.2) return "Walking";
   return "Still";
@@ -438,5 +438,5 @@ export const HEDONIC_TICKS = [
   { at: 32, label: "scroll" },
   { at: 48, label: "cocaine" },
   { at: 64, label: "sugar" },
-  { at: 96, label: "hedonium" },
+  { at: 96, label: "utopia" },
 ] as const;

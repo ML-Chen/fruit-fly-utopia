@@ -6,14 +6,14 @@ import { useProtocol } from "@/store/protocol";
 import type { Stimulus } from "@/lib/brain/simulate";
 
 function dropletColor(s: Stimulus) {
-  if (s === "hedonium") return "#f2efe6";
+  if (s === "utopia") return "#f2efe6";
   return "#d8c48a";
 }
 
 export function Arena() {
   const agar = useMemo(() => makeAgarTexture(), []);
   const stimulus = useProtocol((s) => s.stimulus);
-  const showDrop = stimulus === "sugar" || stimulus === "hedonium";
+  const showDrop = stimulus === "sugar" || stimulus === "utopia";
   const showEthanol = stimulus === "ethanol";
   const showCocaine = stimulus === "cocaine";
   const showPhone = stimulus === "doomscroll";
@@ -39,7 +39,7 @@ export function Arena() {
           side={THREE.DoubleSide}
         />
       </mesh>
-      {showDrop && <Droplet color={dropletColor(stimulus)} glow={stimulus === "hedonium"} />}
+      {showDrop && <Droplet color={dropletColor(stimulus)} glow={stimulus === "utopia"} />}
       {showEthanol && <EthanolPool />}
       {showCocaine && <CocainePile />}
       {showPhone && <Phone />}

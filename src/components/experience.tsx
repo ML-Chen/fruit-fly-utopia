@@ -40,7 +40,7 @@ export function Experience() {
         </div>
       ) : !Scene || !data ? (
         <div className="flex h-full flex-col items-center justify-center gap-2">
-          <p className="font-display text-2xl text-fg">Hedonium</p>
+          <p className="font-display text-2xl text-fg">Fruit fly utopia</p>
           <p className="font-mono text-xs tracking-wide text-muted uppercase">Loading MaleCNS somata</p>
         </div>
       ) : (

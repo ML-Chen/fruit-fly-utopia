@@ -1,4 +1,4 @@
-# Hedonium
+# Fruit fly utopia
 
 A male *Drosophila melanogaster* given only things it wants.
 
@@ -10,10 +10,13 @@ The point cloud is a stratified sample of real soma positions from the
 The fly in the dish is a geometric model. Its motion is not decoration: it is
 the motor program that the corresponding circuit would emit.
 
-## Hedonic index
+This is not hedonium. Hedonium is a unit of pleasure-optimized matter, and
+flies almost certainly lack a mammalian “liking” system. Utopia here means a
+world of only appetitive protocols, plus one clamp of the reward circuit.
 
-Flies almost certainly lack a mammalian opioid “liking” system. What they have
-is a layered reinforcement circuit:
+## Reward index
+
+What they have is a layered reinforcement circuit:
 
 **Gr5a sugar GRNs → OA-VUM octopamine → PAM dopamine neurons → Kenyon cells / MBONs → MN9 (proboscis extension)**
 
@@ -21,7 +24,7 @@ The number in the corner is that circuit’s operational readout:
 
 `0.30·PAM + 0.16·OA + 0.14·sugar + 0.12·NPF + 0.16·MN9 + 0.12·MBON − 0.32·PPL1`
 
-It is not a feeling. Sugar saturates near **64**. Hedonium clamps the same
+It is not a feeling. Sugar saturates near **64**. Utopia clamps the same
 channels to the ceiling. Cocaine floods dopamine and the fly walks in circles —
 MN9 stays quiet, so it never drinks. Wanting is not tasting.
 
@@ -34,7 +37,7 @@ MN9 stays quiet, so it never drinks. Wanting is not tasting.
 | Ethanol | Disinhibited walking | Flies seek fermenting fruit; OA / NPF rise |
 | Cocaine | Hypermotor circling | dDAT block → lingering DA onto descending neurons |
 | Doomscroll | Fixate, then skip | Kenyon-cell novelty habituates → locomotor skip |
-| Hedonium | Locked PER | Appetitive arm clamped; aversive PPL1 silenced |
+| Utopia | Locked PER | Appetitive arm clamped; aversive PPL1 silenced |
 
 There is no quinine, shock, or other aversive protocol.
 

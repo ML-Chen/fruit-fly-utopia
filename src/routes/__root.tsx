@@ -3,7 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "Hedonium";
+const APP_NAME = "Fruit fly utopia";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -15,7 +15,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "A male fruit fly in sugar water, ethanol, cocaine, or hedonium — with its real MaleCNS connectome lighting up beside it.",
+          "A male fruit fly in a world of only things it wants — sugar, ethanol, cocaine, doomscroll, or a full reward-circuit clamp — with its real MaleCNS connectome beside it.",
       },
     ],
     links: [

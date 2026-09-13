@@ -71,7 +71,7 @@ export function WorldCanvas({ somata, meta }: { somata: Somata; meta: Meta }) {
   const stimulus = useProtocol((s) => s.stimulus);
   const showFly = viewMode !== "brain";
   const showBrain = viewMode !== "fly";
-  const amp = stimulus === "hedonium" ? 1.35 : stimulus === "doomscroll" ? 1.15 : 1;
+  const amp = stimulus === "utopia" ? 1.35 : stimulus === "doomscroll" ? 1.15 : 1;
 
   return (
     <Canvas

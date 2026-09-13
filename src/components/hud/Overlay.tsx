@@ -30,7 +30,7 @@ const ICONS: Record<Stimulus, typeof Bug> = {
   ethanol: FlaskConical,
   cocaine: Zap,
   doomscroll: Smartphone,
-  hedonium: CircleDot,
+  utopia: CircleDot,
 };
 
 export function Overlay() {
@@ -56,7 +56,7 @@ export function Overlay() {
       <header className="pointer-events-auto flex items-start justify-between gap-4">
         <div>
           <p className="font-mono text-xs tracking-[0.18em] text-muted uppercase">MaleCNS · Google × Janelia</p>
-          <h1 className="font-display text-3xl font-medium tracking-tight text-fg sm:text-4xl">Hedonium</h1>
+          <h1 className="font-display text-3xl font-medium tracking-tight text-fg sm:text-4xl">Fruit fly utopia</h1>
           <p className="mt-1 max-w-sm text-sm text-muted">A fruit fly given only things it wants. Watch the animal and the circuit at once.</p>
         </div>
         <button
@@ -123,7 +123,7 @@ export function Overlay() {
         <div className="rounded-lg border border-border bg-surface/90 p-3 lg:hidden">
           <div className="flex items-end justify-between gap-3">
             <div>
-              <p className="font-mono text-[10px] tracking-[0.16em] text-muted uppercase">Hedonic index</p>
+              <p className="font-mono text-[10px] tracking-[0.16em] text-muted uppercase">Reward index</p>
               <p className="font-display text-3xl tabular-nums text-fg">{score}</p>
             </div>
             <p className="max-w-[12rem] text-right text-xs leading-relaxed text-muted">{motion.action}</p>
@@ -154,10 +154,10 @@ export function Overlay() {
 
         <div className="flex flex-wrap items-center gap-2">
           <Button
-            variant={stimulus === "hedonium" ? "primary" : "ghost"}
-            onClick={() => setStimulus("hedonium")}
+            variant={stimulus === "utopia" ? "primary" : "ghost"}
+            onClick={() => setStimulus("utopia")}
           >
-            Infuse hedonium
+            Enter utopia
           </Button>
           <div className="flex rounded-md border border-border bg-surface p-1">
             {(["both", "fly", "brain"] as ViewMode[]).map((m) => (
@@ -186,7 +186,7 @@ export function Overlay() {
             Reward circuit
           </button>
           <p className="hidden font-mono text-xs text-subtle sm:block">
-            {fmtPct(snapshot.hedonic)} hedonic · {daHz.toFixed(1)} Hz PAM · drag to orbit
+            {fmtPct(snapshot.hedonic)} reward · {daHz.toFixed(1)} Hz PAM · drag to orbit
             <span className="text-subtle"> · observer aurora, unseen by the fly</span>
           </p>
         </div>
@@ -200,7 +200,7 @@ export function Overlay() {
 function HappinessCard({ score, history, daHz }: { score: number; history: number[]; daHz: number }) {
   return (
     <div className="rounded-lg border border-border bg-surface/90 p-4">
-      <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">Hedonic index</p>
+      <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">Reward index</p>
       <div className="mt-1 flex items-end justify-between gap-3">
         <p className="font-display text-5xl tabular-nums leading-none text-fg">{score}</p>
         <p className="pb-1 text-right font-mono text-[11px] leading-relaxed text-subtle">
@@ -210,7 +210,7 @@ function HappinessCard({ score, history, daHz }: { score: number; history: numbe
         </p>
       </div>
       <p className="mt-2 text-xs leading-relaxed text-muted">
-        Weighted PAM + octopamine + PER − PPL1. Not a feeling. Sugar tops out near 64. Hedonium is the clamp.
+        Weighted PAM + octopamine + PER − PPL1. Not a feeling. Sugar tops out near 64. Utopia is the clamp.
       </p>
       <Spark history={history} />
       <HedonicBar score={score} />
@@ -302,13 +302,13 @@ function About({ onClose }: { onClose: () => void }) {
           <p>
             The fly is a geometric male <em>Drosophila melanogaster</em>. Every environment is something a fly
             approaches: sugar water (proboscis-extension reflex), ethanol in fermenting fruit, cocaine (dopamine
-            transporter block — a standard self-administration assay), a novel visual stream, or hedonium.
+            transporter block — a standard self-administration assay), a novel visual stream, or a full circuit clamp.
             There is no quinine, shock, or other aversive protocol.
           </p>
           <p>
             Flies almost certainly lack a mammalian opioid “liking” system. What they have is a layered reinforcement
-            circuit: sweet taste → octopamine → PAM dopamine → mushroom body. The hedonic index is that circuit’s
-            operational readout, not a feeling. Sugar saturates near 64. Hedonium clamps the same channels to the
+            circuit: sweet taste → octopamine → PAM dopamine → mushroom body. The reward index is that circuit’s
+            operational readout, not a feeling. Sugar saturates near 64. Utopia clamps the same channels to the
             ceiling and silences aversive PPL1 cells until MN9 fires as if the fly were tasting unbounded sugar.
           </p>
           <p>

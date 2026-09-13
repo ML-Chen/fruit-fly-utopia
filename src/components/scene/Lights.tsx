@@ -3,7 +3,7 @@ import { useProtocol } from "@/store/protocol";
 export function Lights() {
   const stimulus = useProtocol((s) => s.stimulus);
   const key =
-    stimulus === "hedonium"
+    stimulus === "utopia"
       ? "#f0ead8"
       : stimulus === "ethanol"
         ? "#c4a56a"
@@ -14,7 +14,7 @@ export function Lights() {
             : stimulus === "sugar"
               ? "#e2d2a8"
               : "#d4d0c8";
-  const fill = stimulus === "hedonium" ? 0.55 : stimulus === "cocaine" ? 0.42 : stimulus === "doomscroll" ? 0.38 : 0.22;
+  const fill = stimulus === "utopia" ? 0.55 : stimulus === "cocaine" ? 0.42 : stimulus === "doomscroll" ? 0.38 : 0.22;
 
   return (
     <>
@@ -29,7 +29,7 @@ export function Lights() {
       <directionalLight position={[-5, 3, -2]} intensity={fill} color="#8a9aa8" />
       <pointLight
         position={[1.15, 0.4, 0.15]}
-        intensity={stimulus === "hedonium" ? 1.4 : stimulus === "sugar" ? 0.35 : 0.12}
+        intensity={stimulus === "utopia" ? 1.4 : stimulus === "sugar" ? 0.35 : 0.12}
         color="#f2ead4"
         distance={4}
       />
