@@ -12,17 +12,25 @@ export type BrainState = {
   sugar: number;
   bitter: number;
   oa: number;
+  pamTaste: number;
+  pamNutrient: number;
+  pamFlood: number;
   pam: number;
   ppl1: number;
   npf: number;
   kc: number;
+  mbonApp: number;
+  mbonAv: number;
   mbon: number;
   mn9: number;
   motor: number;
   visual: number;
-  hedonic: number;
   loco: number;
   novelty: number;
+  agitation: number;
+  valence: number;
+  palatability: number;
+  welfare: number;
 };
 
 export type EnvironmentInfo = {
@@ -43,31 +51,31 @@ export const ENVIRONMENTS: EnvironmentInfo[] = [
     id: "sugar",
     label: "Sugar water",
     kicker: "Appetitive",
-    blurb: "Sweet GRNs fire MN9 (proboscis extension) and, via octopamine, the PAM dopamine neurons that write reward into the mushroom body.",
+    blurb: "Sweet GRNs fire PER innately (TH-VUM / MN9). Octopamine teaches PAM taste-DANs; a slower PAM subset writes nutritional value. That is a meal, not a mood.",
   },
   {
     id: "ethanol",
     label: "Ethanol",
     kicker: "Ferment",
-    blurb: "Flies seek ethanol in rotting fruit. It raises octopamine, NPF and locomotion — the same pathway as a glass of wine, in miniature.",
+    blurb: "Flies seek ethanol in rotting fruit. NPF and octopamine rise. Wanting goes up; the proboscis does not lock the way it does on sugar.",
   },
   {
     id: "cocaine",
     label: "Cocaine",
     kicker: "DAT block",
-    blurb: "Blocks the fly dopamine transporter. Walking explodes. It is not sugar: MN9 stays quiet, so the fly never drinks.",
+    blurb: "Extrasynaptic dopamine, not a compartmental reward pulse. The fly walks. PER stays off. Welfare falls — this is wanting without a meal.",
   },
   {
     id: "doomscroll",
     label: "Doomscroll",
     kicker: "Visual novelty",
-    blurb: "The screen fills the compound eyes. Kenyon cells track novelty; when that prediction error dies, the fly skips — a locomotor 'scroll'.",
+    blurb: "Ommatidia see a changing screen. Kenyon cells track novelty; when it habituates, a locomotor skip. Novelty is not consumption.",
   },
   {
     id: "utopia",
     label: "Utopia",
-    kicker: "Clamp",
-    blurb: "Every appetitive channel clamped on; aversive PPL1 silenced. The operational ceiling of this brain’s reward circuit — not a pleasure-matter. Flies don’t have that.",
+    kicker: "Welfare clamp",
+    blurb: "Unbounded sweet taste and postingestive PAM, PPL1 off, PER locked, locomotion calm. Not a PAM flood — flooding reward DANs can make the fly acutely averse.",
   },
 ];
 
@@ -87,17 +95,25 @@ export function emptyState(): BrainState {
     sugar: 0.02,
     bitter: 0.02,
     oa: 0.04,
+    pamTaste: 0.03,
+    pamNutrient: 0.03,
+    pamFlood: 0,
     pam: 0.03,
-    ppl1: 0.04,
+    ppl1: 0.05,
     npf: 0.12,
     kc: 0.05,
-    mbon: 0.03,
+    mbonApp: 0.35,
+    mbonAv: 0.35,
+    mbon: 0.35,
     mn9: 0.01,
     motor: 0.04,
     visual: 0.08,
-    hedonic: 0,
     loco: 0.08,
     novelty: 0.1,
+    agitation: 0.02,
+    valence: 0.5,
+    palatability: 0.02,
+    welfare: 0.1,
   };
 }
 
@@ -124,15 +140,27 @@ export function createEngine(): Engine {
 }
 
 /**
- * Reduced rate model of published Drosophila appetitive circuits.
+ * Reduced rate model of published Drosophila appetitive circuitry.
  *
- * Sugar GRNs → octopamine (OA-VUM) → PAM DANs → Kenyon cells / MBONs → MN9 (PER).
- * PPL1 is tracked as the aversive counterpart but never driven by a user protocol.
- * Ethanol and cocaine are standard appetitive / pharmacological assays.
- * Doomscroll: visual novelty in the mushroom body, locomotor skip on habituation.
+ * Innate palatability (PER) is parallel to learning, not downstream of it:
+ *   Gr5a GRNs → TH-VUM (SOG) → MN9   (Marella et al. 2012)
  *
- * Soma positions are real MaleCNS coordinates. The rates are a circuit-level
- * instrument, not a 125-million-synapse spike simulation.
+ * Reinforcement is layered (Burke et al. 2012; Huetteroth / Yamagata 2015):
+ *   sweet taste → octopamine → PAM taste-DANs (short-term)
+ *   nutrition  → PAM nutrient-DANs (γ5 / α1, slower, OA-independent)
+ *
+ * Valence at the mushroom body (Aso et al. 2014; Bennett et al. 2021):
+ *   PAM depresses avoidance MBONs → net approach
+ *   PPL1 depresses approach MBONs → net avoidance
+ *   valence ≈ approach − avoidance
+ *
+ * Cohn et al. 2015: sugar activates PAM and inhibits PPL1.
+ * 2025 PAM paper: activating the whole reward-PAM population can drive
+ * acute aversion even while writing a positive memory. Flooding PAM is
+ * therefore not welfare.
+ *
+ * Welfare is OUR objective, not a feeling:
+ *   consumption + nutrient − punishment − agitation
  */
 export function stepEngine(engine: Engine, dt: number, stimulus: Stimulus, intensity: number) {
   const d = Math.min(Math.max(dt, 0), 0.08);
@@ -149,98 +177,126 @@ export function stepEngine(engine: Engine, dt: number, stimulus: Stimulus, inten
 
   let iSugar = 0;
   let iOa = 0;
-  let iPam = 0;
+  let iPamTaste = 0;
+  let iPamNutrient = 0;
+  let iFlood = 0;
   let iPpl1 = 0;
   let iNpf = 0;
   let iVis = 0.07;
+  let iPer = 0;
   let locoBias = 0.08;
   let tNovelty = 0.08;
 
   if (stimulus === "sugar") {
     iSugar = 0.92 * I;
-    locoBias = 0.18;
+    iPer = 0.88 * I;
+    locoBias = 0.16;
   } else if (stimulus === "utopia") {
+    // Physiological-high sweet + nutrient, PPL1 off, PER locked, calm.
+    // Do not slam every PAM cell: that is the 2025 acute-aversion regime.
     iSugar = 1.0 * I;
-    iOa = 0.95 * I;
-    iPam = 1.0 * I;
-    iNpf = 0.88 * I;
+    iOa = 0.55 * I;
+    iPamTaste = 0.35 * I;
+    iPamNutrient = 0.55 * I;
     iPpl1 = -0.95 * I;
-    iVis = 0.28 * I;
-    locoBias = 0.12;
-    tNovelty = 0.2;
+    iNpf = 0.35 * I;
+    iPer = 1.0 * I;
+    iVis = 0.12;
+    locoBias = 0.06;
+    tNovelty = 0.12;
   } else if (stimulus === "ethanol") {
-    // Appetitive ferment: keep the rising phase, skip the sedative collapse.
-    iOa = 0.42 * I;
-    iNpf = 0.38 * I;
-    iPam = 0.28 * I;
-    iSugar = 0.12 * I;
-    locoBias = clamp01(0.22 + 0.55 * I);
+    iOa = 0.4 * I;
+    iNpf = 0.48 * I;
+    iPamTaste = 0.12 * I;
+    iPamNutrient = 0.18 * I;
+    iSugar = 0.1 * I;
+    iPer = 0.12 * I;
+    locoBias = clamp01(0.22 + 0.5 * I);
   } else if (stimulus === "cocaine") {
-    iPam = 0.92 * I;
-    iOa = 0.14 * I;
-    iNpf = 0.22 * I;
-    locoBias = clamp01(0.2 + 0.85 * I);
+    iFlood = 0.9 * I;
+    iOa = 0.08 * I;
+    iNpf = 0.16 * I;
+    locoBias = clamp01(0.22 + 0.85 * I);
   } else if (stimulus === "doomscroll") {
     const cycle = tStim % 4.6;
     tNovelty = clamp01(0.08 + 0.9 * I * Math.exp(-cycle / 1.15));
     iVis = 0.82 * I;
-    iPam = 0.22 * I * tNovelty;
-    iNpf = 0.12 * I * tNovelty;
-    iOa = 0.06 * I;
+    iPamTaste = 0.16 * I * tNovelty;
+    iNpf = 0.1 * I * tNovelty;
     locoBias = tNovelty < 0.22 ? 0.62 : 0.06;
   }
 
   s.sugar = leaky(s.sugar, clamp01(iSugar), 0.07, d);
   s.bitter = leaky(s.bitter, 0.02, 0.2, d);
+  s.novelty = leaky(s.novelty, tNovelty, 0.18, d);
+  s.visual = leaky(s.visual, clamp01(iVis), 0.28, d);
 
-  const tOa = clamp01(0.06 + 0.62 * s.sugar + iOa);
+  const tOa = clamp01(0.05 + 0.62 * s.sugar + iOa);
   s.oa = leaky(s.oa, tOa, 0.22, d);
 
-  const tNpf = clamp01(0.14 + 0.28 * s.sugar + iNpf);
+  const tNpf = clamp01(0.12 + 0.22 * s.sugar + iNpf);
   s.npf = leaky(s.npf, tNpf, 0.55, d);
 
-  const tPpl1 = clamp01(0.04 + iPpl1 - 0.28 * s.pam);
+  const tPamTaste = clamp01(0.03 + 0.55 * s.oa + 0.22 * s.sugar + iPamTaste);
+  s.pamTaste = leaky(s.pamTaste, tPamTaste, 0.16, d);
+
+  const tPamNutrient = clamp01(0.03 + 0.48 * s.sugar + iPamNutrient);
+  s.pamNutrient = leaky(s.pamNutrient, tPamNutrient, 0.7, d);
+
+  s.pamFlood = leaky(s.pamFlood, clamp01(iFlood), 0.2, d);
+
+  const pamReward = 0.55 * s.pamTaste + 0.45 * s.pamNutrient;
+  s.pam = clamp01(0.65 * pamReward + 0.55 * s.pamFlood);
+
+  // Sugar inhibits PPL1 (Cohn 2015). Flood does not.
+  const tPpl1 = clamp01(0.05 + iPpl1 - 0.4 * s.sugar - 0.22 * pamReward + 0.08 * s.pamFlood);
   s.ppl1 = leaky(s.ppl1, tPpl1, 0.18, d);
 
-  const tPam = clamp01(0.04 + 0.48 * s.oa + 0.32 * s.sugar + 0.18 * s.npf + iPam - 0.35 * s.ppl1);
-  s.pam = leaky(s.pam, tPam, 0.16, d);
+  // Whole-cluster / extrasynaptic DA → innate agitation, not a meal.
+  const tAgit = clamp01(0.02 + 0.85 * s.pamFlood + 0.35 * Math.max(0, s.pam - 0.78) + 0.15 * (s.loco - 0.5));
+  s.agitation = leaky(s.agitation, tAgit, 0.28, d);
 
-  s.novelty = leaky(s.novelty, tNovelty, 0.18, d);
-
-  const tKc = clamp01(0.06 + 0.58 * s.pam + 0.16 * s.oa + 0.35 * s.novelty - 0.22 * s.ppl1);
+  const tKc = clamp01(0.05 + 0.4 * pamReward + 0.2 * s.oa + 0.32 * s.novelty + 0.12 * s.visual);
   s.kc = leaky(s.kc, tKc, 0.14, d);
 
-  const tMbon = clamp01(0.04 + 0.72 * s.kc * (0.35 + 0.65 * s.pam) - 0.28 * s.ppl1);
-  s.mbon = leaky(s.mbon, tMbon, 0.12, d);
+  const tAv = clamp01(0.32 + 0.55 * s.ppl1 - 0.48 * pamReward + 0.28 * s.agitation);
+  s.mbonAv = leaky(s.mbonAv, tAv, 0.14, d);
 
-  const tMn9 = clamp01(0.015 + 0.48 * s.sugar + 0.38 * s.mbon + 0.18 * s.oa - 0.2 * s.ppl1);
+  const tApp = clamp01(0.32 + 0.48 * pamReward - 0.5 * s.ppl1 - 0.22 * s.agitation);
+  s.mbonApp = leaky(s.mbonApp, tApp, 0.14, d);
+  s.mbon = s.mbonApp;
+  s.valence = clamp01(0.5 + 0.5 * (s.mbonApp - s.mbonAv));
+
+  // Innate PER: sugar GRNs → TH-VUM → MN9. Not via the mushroom body.
+  const tMn9 = clamp01(0.015 + 0.72 * s.sugar + 0.55 * iPer + 0.12 * s.oa - 0.45 * s.agitation - 0.15 * s.ppl1);
   s.mn9 = leaky(s.mn9, tMn9, 0.09, d);
+  s.palatability = s.mn9;
 
-  s.visual = leaky(s.visual, clamp01(iVis + 0.05 * s.oa), 0.28, d);
+  const tLoco = clamp01(locoBias + 0.55 * s.agitation - 0.25 * s.mn9);
+  s.loco = leaky(s.loco, tLoco, 0.32, d);
+  s.motor = leaky(s.motor, clamp01(0.04 + 0.2 * s.mn9 + s.loco), 0.22, d);
 
-  s.hedonic = clamp01(
-    0.3 * s.pam +
-      0.16 * s.oa +
-      0.14 * s.sugar +
-      0.12 * s.npf +
-      0.16 * s.mn9 +
-      0.12 * s.mbon -
-      0.32 * s.ppl1,
+  // Explicit human-chosen welfare. Not liking. Not a fly-computed scalar.
+  s.welfare = clamp01(
+    0.4 * s.mn9 +
+      0.2 * s.sugar +
+      0.16 * s.pamNutrient +
+      0.1 * s.oa * (1 - s.agitation) +
+      0.12 * (1 - s.ppl1) +
+      0.06 * s.npf * (1 - s.agitation) -
+      0.22 * s.agitation -
+      0.1 * s.pamFlood,
   );
-
-  const tMotor = clamp01(0.04 + 0.2 * s.mn9 + locoBias);
-  s.motor = leaky(s.motor, tMotor, 0.22, d);
-  s.loco = leaky(s.loco, clamp01(locoBias), 0.35, d);
 
   const r = engine.rates;
   r[0] = s.visual;
-  r[1] = 0.06 + 0.42 * s.hedonic;
+  r[1] = 0.06 + 0.42 * s.welfare;
   r[2] = 0.05 + 0.45 * s.loco;
   r[3] = s.kc;
   r[4] = s.pam;
   r[5] = s.ppl1;
   r[6] = 0.08 + 0.22 * s.pam;
-  r[7] = s.mbon;
+  r[7] = s.mbonApp;
   r[8] = s.sugar;
   r[9] = s.bitter;
   r[10] = 0.25 * s.sugar;
@@ -248,11 +304,11 @@ export function stepEngine(engine: Engine, dt: number, stimulus: Stimulus, inten
   r[12] = s.npf;
   r[13] = s.mn9;
   r[14] = s.motor;
-  r[15] = 0.07 + 0.12 * s.hedonic;
+  r[15] = 0.07 + 0.12 * s.welfare;
   r[16] = 0.04;
   r[17] = 0.06 + 0.4 * s.loco;
 
-  engine.history[engine.histHead] = s.hedonic;
+  engine.history[engine.histHead] = s.welfare;
   engine.histHead = (engine.histHead + 1) % HISTORY;
 }
 
@@ -307,7 +363,7 @@ export function flyDrive(stimulus: Stimulus, s: BrainState, stimElapsed: number)
       per: 0.04,
       goal: "circle",
       wingDroop: 0,
-      tremor: 0.55,
+      tremor: 0.45 + 0.4 * s.agitation,
       groom: 0,
       collapsed: 0,
     };
@@ -328,11 +384,11 @@ export function flyDrive(stimulus: Stimulus, s: BrainState, stimElapsed: number)
   if (stimulus === "utopia") {
     return {
       walkSpeed: s.mn9 > 0.5 ? 0.02 : 0.45,
-      turnNoise: 0.12,
-      per: Math.max(s.mn9, 0.85 * s.hedonic),
+      turnNoise: 0.1,
+      per: s.mn9,
       goal: "droplet",
-      wingDroop: 0.35,
-      tremor: 0.12 * s.hedonic,
+      wingDroop: 0.28,
+      tremor: 0.04,
       groom: 0,
       collapsed: 0,
     };
@@ -371,14 +427,14 @@ export function explainMotion(stimulus: Stimulus, s: BrainState, stimElapsed: nu
   if (d.per > 0.55) {
     return {
       action: "Proboscis extension (PER)",
-      why: "MN9, a real motor neuron in this connectome, drives the proboscis. Sweet GRNs can fire it innately; PAM dopamine and MBONs hold it on.",
-      pathway: "Gr5a GRNs → OA-VUM → PAM DANs → KC/MBON → MN9",
+      why: "Sweet GRNs fire MN9 through TH-VUM in the SOG. That path does not go through the mushroom body. PER is palatability, not a learned value.",
+      pathway: "Gr5a GRNs → TH-VUM → MN9",
     };
   }
   if (stimulus === "cocaine") {
     return {
       action: "Hypermotor circling",
-      why: "Cocaine blocks dDAT, so dopamine lingers in the cleft. Descending neurons walk. MN9 never fires — this is wanting, not drinking.",
+      why: "dDAT block spills dopamine into the cleft. Descending neurons walk. MN9 never fires. High PAM is not a meal — and whole-cluster PAM activation can even be acutely aversive.",
       pathway: "dDAT block → extrasynaptic DA → descending neurons",
     };
   }
@@ -386,7 +442,7 @@ export function explainMotion(stimulus: Stimulus, s: BrainState, stimElapsed: nu
     return {
       action: "Disinhibited walking",
       why: "Flies approach fermenting fruit. Ethanol lifts octopamine and NPF, which bias the central complex toward longer walking bouts.",
-      pathway: "Ethanol → OA / NPF / PAM → CX → VNC",
+      pathway: "Ethanol → OA / NPF → CX → VNC",
     };
   }
   if (stimulus === "doomscroll" && s.novelty < 0.22) {
@@ -413,8 +469,8 @@ export function explainMotion(stimulus: Stimulus, s: BrainState, stimElapsed: nu
   if (d.goal === "droplet") {
     return {
       action: "Appetitive approach",
-      why: "Sweet-associated mushroom-body output neurons bias walking toward the droplet until MN9 takes over and the fly drinks.",
-      pathway: "PAM → KC → appetitive MBON → walking",
+      why: "PAM taste-DANs depress avoidance MBONs, so net mushroom-body output biases walking toward the droplet. PER takes over when the labellum hits sugar.",
+      pathway: "PAM → KC → ↓ avoidance MBON → walking",
     };
   }
   return {
@@ -424,19 +480,19 @@ export function explainMotion(stimulus: Stimulus, s: BrainState, stimElapsed: nu
   };
 }
 
-/** Model-equivalent PAM firing. Not a patch-clamp recording. */
+/** Model-equivalent PAM cluster rate. Not a patch-clamp recording. */
 export function pamHz(s: BrainState) {
-  return 1.2 + s.pam * 42;
+  return 1.2 + s.pam * 28;
 }
 
-export function hedonicIndex(s: BrainState) {
-  return Math.round(s.hedonic * 100);
+export function welfareIndex(s: BrainState) {
+  return Math.round(s.welfare * 100);
 }
 
-export const HEDONIC_TICKS = [
-  { at: 8, label: "rest" },
-  { at: 32, label: "scroll" },
-  { at: 48, label: "cocaine" },
-  { at: 64, label: "sugar" },
-  { at: 96, label: "utopia" },
+export const WELFARE_TICKS = [
+  { at: 3, label: "cocaine" },
+  { at: 14, label: "rest" },
+  { at: 33, label: "ethanol" },
+  { at: 86, label: "sugar" },
+  { at: 97, label: "utopia" },
 ] as const;

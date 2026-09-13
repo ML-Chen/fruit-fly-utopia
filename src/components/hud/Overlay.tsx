@@ -16,9 +16,10 @@ import {
   behaviorLabel,
   ENVIRONMENTS,
   explainMotion,
-  HEDONIC_TICKS,
-  hedonicIndex,
+  WELFARE_TICKS,
+  welfareIndex,
   pamHz,
+  type BrainState,
   type Stimulus,
 } from "@/lib/brain/simulate";
 import { cn, fmtPct } from "@/lib/utils";
@@ -48,7 +49,7 @@ export function Overlay() {
   const env = ENVIRONMENTS.find((e) => e.id === stimulus)!;
   const behavior = behaviorLabel(stimulus, snapshot, stimElapsed);
   const motion = explainMotion(stimulus, snapshot, stimElapsed);
-  const score = hedonicIndex(snapshot);
+  const score = welfareIndex(snapshot);
   const daHz = pamHz(snapshot);
 
   return (
@@ -99,7 +100,7 @@ export function Overlay() {
         <div className="hidden min-w-0 flex-1 lg:block" />
 
         <aside className="pointer-events-auto ml-auto hidden w-[19.5rem] shrink-0 flex-col justify-end gap-3 lg:flex">
-          <HappinessCard score={score} history={history} daHz={daHz} />
+          <HappinessCard snapshot={snapshot} history={history} daHz={daHz} score={score} />
           <div className="rounded-lg border border-border bg-surface/90 p-4">
             <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">Why it moves</p>
             <p className="mt-1 font-display text-xl text-fg">{motion.action}</p>
@@ -110,10 +111,12 @@ export function Overlay() {
               <span className="text-muted"> · {env.label}</span>
             </p>
             <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2">
-              <Meter label="PAM DA" value={snapshot.pam} />
-              <Meter label="Octopamine" value={snapshot.oa} />
-              <Meter label="MN9 / PER" value={snapshot.mn9} />
-              <Meter label="Novelty" value={snapshot.novelty} />
+              <Meter label="Valence" value={snapshot.valence} />
+              <Meter label="PER" value={snapshot.mn9} />
+              <Meter label="PAM taste" value={snapshot.pamTaste} />
+              <Meter label="PAM nutrient" value={snapshot.pamNutrient} />
+              <Meter label="PPL1" value={snapshot.ppl1} warn />
+              <Meter label="Agitation" value={snapshot.agitation} warn />
             </dl>
           </div>
         </aside>
@@ -123,12 +126,12 @@ export function Overlay() {
         <div className="rounded-lg border border-border bg-surface/90 p-3 lg:hidden">
           <div className="flex items-end justify-between gap-3">
             <div>
-              <p className="font-mono text-[10px] tracking-[0.16em] text-muted uppercase">Reward index</p>
+              <p className="font-mono text-[10px] tracking-[0.16em] text-muted uppercase">Welfare</p>
               <p className="font-display text-3xl tabular-nums text-fg">{score}</p>
             </div>
             <p className="max-w-[12rem] text-right text-xs leading-relaxed text-muted">{motion.action}</p>
           </div>
-          <HedonicBar score={score} />
+          <WelfareBar score={score} />
         </div>
 
         <div className="flex gap-1 overflow-x-auto pb-1 sm:hidden">
@@ -186,7 +189,7 @@ export function Overlay() {
             Reward circuit
           </button>
           <p className="hidden font-mono text-xs text-subtle sm:block">
-            {fmtPct(snapshot.hedonic)} reward · {daHz.toFixed(1)} Hz PAM · drag to orbit
+            {fmtPct(snapshot.welfare)} welfare · PER {fmtPct(snapshot.mn9)} · drag to orbit
             <span className="text-subtle"> · observer aurora, unseen by the fly</span>
           </p>
         </div>
@@ -197,28 +200,42 @@ export function Overlay() {
   );
 }
 
-function HappinessCard({ score, history, daHz }: { score: number; history: number[]; daHz: number }) {
+function HappinessCard({
+  score,
+  history,
+  daHz,
+  snapshot,
+}: {
+  score: number;
+  history: number[];
+  daHz: number;
+  snapshot: BrainState;
+}) {
   return (
     <div className="rounded-lg border border-border bg-surface/90 p-4">
-      <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">Reward index</p>
+      <p className="font-mono text-[11px] tracking-[0.16em] text-muted uppercase">Welfare</p>
       <div className="mt-1 flex items-end justify-between gap-3">
         <p className="font-display text-5xl tabular-nums leading-none text-fg">{score}</p>
         <p className="pb-1 text-right font-mono text-[11px] leading-relaxed text-subtle">
-          PAM {daHz.toFixed(1)} Hz
+          PER {fmtPct(snapshot.mn9)}
           <br />
-          model rate, not a spike
+          valence {fmtPct(snapshot.valence)}
         </p>
       </div>
       <p className="mt-2 text-xs leading-relaxed text-muted">
-        Weighted PAM + octopamine + PER − PPL1. Not a feeling. Sugar tops out near 64. Utopia is the clamp.
+        Our objective, not a feeling: consumption + nutrient − punishment − agitation. Cocaine raises dopamine and
+        loses. Sugar is a meal. Utopia is the meal that does not end.
       </p>
       <Spark history={history} />
-      <HedonicBar score={score} />
+      <WelfareBar score={score} />
+      <p className="mt-3 font-mono text-[10px] text-subtle">
+        PAM {daHz.toFixed(1)} Hz model · flood {fmtPct(snapshot.pamFlood)} · agit {fmtPct(snapshot.agitation)}
+      </p>
     </div>
   );
 }
 
-function HedonicBar({ score }: { score: number }) {
+function WelfareBar({ score }: { score: number }) {
   return (
     <div className="mt-3">
       <div className="relative h-1.5 overflow-visible rounded-xs bg-surface-2">
@@ -229,7 +246,7 @@ function HedonicBar({ score }: { score: number }) {
         />
       </div>
       <div className="relative mt-1.5 h-4">
-        {HEDONIC_TICKS.map((t) => (
+        {WELFARE_TICKS.map((t) => (
           <span
             key={t.label}
             className="absolute -translate-x-1/2 font-mono text-[9px] tracking-wide text-subtle uppercase"
@@ -243,7 +260,7 @@ function HedonicBar({ score }: { score: number }) {
   );
 }
 
-function Meter({ label, value }: { label: string; value: number }) {
+function Meter({ label, value, warn }: { label: string; value: number; warn?: boolean }) {
   return (
     <div>
       <div className="flex justify-between font-mono text-[10px] tracking-wide text-subtle uppercase">
@@ -251,7 +268,10 @@ function Meter({ label, value }: { label: string; value: number }) {
         <span className="tabular-nums text-muted">{fmtPct(value)}</span>
       </div>
       <div className="mt-1 h-1 overflow-hidden rounded-xs bg-surface-2">
-        <div className="h-full rounded-xs bg-accent" style={{ width: `${Math.round(value * 100)}%` }} />
+        <div
+          className={warn ? "h-full rounded-xs bg-danger" : "h-full rounded-xs bg-accent"}
+          style={{ width: `${Math.round(value * 100)}%` }}
+        />
       </div>
     </div>
   );
@@ -301,21 +321,20 @@ function About({ onClose }: { onClose: () => void }) {
           </p>
           <p>
             The fly is a geometric male <em>Drosophila melanogaster</em>. Every environment is something a fly
-            approaches: sugar water (proboscis-extension reflex), ethanol in fermenting fruit, cocaine (dopamine
-            transporter block — a standard self-administration assay), a novel visual stream, or a full circuit clamp.
-            There is no quinine, shock, or other aversive protocol.
+            approaches: sugar water, ethanol in fermenting fruit, cocaine (a DAT-block assay), a novel visual stream,
+            or a welfare clamp. There is no quinine, shock, or other aversive protocol.
           </p>
           <p>
-            Flies almost certainly lack a mammalian opioid “liking” system. What they have is a layered reinforcement
-            circuit: sweet taste → octopamine → PAM dopamine → mushroom body. The reward index is that circuit’s
-            operational readout, not a feeling. Sugar saturates near 64. Utopia clamps the same channels to the
-            ceiling and silences aversive PPL1 cells until MN9 fires as if the fly were tasting unbounded sugar.
+            Flies have wanting and reinforcement, almost certainly not liking. Sweet taste fires PER innately through
+            TH-VUM, in parallel with the mushroom body. Octopamine teaches a PAM subset about sweet; a slower PAM
+            subset writes nutritional value. PPL1 writes punishment. Approach minus avoidance MBONs is valence
+            (Bennett 2021). Flooding all reward PAM cells can make the fly acutely averse even as it stamps a positive
+            memory.
           </p>
           <p>
-            Movement is not decoration. Approach is appetitive MBON output. Drinking is MN9. Cocaine circling is
-            lingering dopamine onto descending neurons, with PER off. Doomscrolling is Kenyon-cell novelty decaying
-            until a locomotor skip. The dynamics are a reduced rate model, not a full leaky-integrate-and-fire pass
-            over 50 million synapses. Treat the numbers as an instrument, not a mind.
+            Welfare is our objective, printed as such: consumption + postingestive nutrient − punishment − agitation.
+            Cocaine scores near the floor. Sugar is a real meal. Utopia is that meal without end, with PPL1 off and
+            locomotion calm — not a dopamine flood. Treat the numbers as an instrument, not a mind.
           </p>
         </div>
         <div className="mt-5 flex items-center gap-2 text-xs text-subtle">

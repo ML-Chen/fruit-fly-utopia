@@ -7,43 +7,51 @@ The point cloud is a stratified sample of real soma positions from the
 (HHMI Janelia FlyEM, Google Research, Cambridge, MRC LMB; Cell 2026) —
 166,691 neurons, ~125 million synapses, CC-BY.
 
-The fly in the dish is a geometric model. Its motion is not decoration: it is
-the motor program that the corresponding circuit would emit.
+The fly in the dish is a geometric model. Its motion is the motor program the
+corresponding circuit would emit.
 
-This is not hedonium. Hedonium is a unit of pleasure-optimized matter, and
-flies almost certainly lack a mammalian “liking” system. Utopia here means a
-world of only appetitive protocols, plus one clamp of the reward circuit.
+This is not hedonium and it is not a feeling. Flies have **wanting** and
+**reinforcement**. They almost certainly do not have a mammalian liking system.
 
-## Reward index
+## What is being maximised
 
-What they have is a layered reinforcement circuit:
+**Welfare** is a human-chosen objective, printed as such:
 
-**Gr5a sugar GRNs → OA-VUM octopamine → PAM dopamine neurons → Kenyon cells / MBONs → MN9 (proboscis extension)**
+`0.40·PER + 0.20·sugar + 0.16·PAM_nutrient + 0.10·OA·(1−agit) + 0.12·(1−PPL1) + 0.06·NPF·(1−agit) − 0.22·agitation − 0.10·DA_flood`
 
-The number in the corner is that circuit’s operational readout:
+That is: ongoing consumption and postingestive nutrient, minus punishment and
+hyperdopaminergic agitation. Cocaine loses. Sugar is a meal. Utopia is that
+meal without end, with PPL1 off and walking calm.
 
-`0.30·PAM + 0.16·OA + 0.14·sugar + 0.12·NPF + 0.16·MN9 + 0.12·MBON − 0.32·PPL1`
+It is **not** “max PAM.” Activating the whole reward-PAM cluster can make a fly
+acutely averse even while those cells write a positive memory.
 
-It is not a feeling. Sugar saturates near **64**. Utopia clamps the same
-channels to the ceiling. Cocaine floods dopamine and the fly walks in circles —
-MN9 stays quiet, so it never drinks. Wanting is not tasting.
+## Circuit (the parts that are real)
+
+| Path | What it is | Source |
+| --- | --- | --- |
+| Gr5a → TH-VUM → MN9 | Innate PER / palatability. Parallel to learning, not downstream of it. | Marella et al. 2012 |
+| sweet → OA → PAM taste-DANs | Short-term reinforcement of sweet | Burke et al. 2012 |
+| nutrition → PAM γ5 / α1 | Slower postingestive reward, OA-independent | Huetteroth, Yamagata 2015 |
+| PAM vs PPL1 on MBONs | Valence ≈ approach − avoidance | Aso 2014; Bennett 2021 |
+| Sugar ⊣ PPL1 | Reward also quiets punishment DANs | Cohn et al. 2015 |
+| dDAT block | Extrasynaptic DA, hyperlocomotion, no PER | McClung & Hirsh 1998 |
+
+The dynamics are a reduced rate model. Soma positions are real. The Hz numbers
+are model-equivalent, not patch-clamp.
 
 ## Why it moves
 
-| World | Motor program | Cause |
+| World | Motor program | Welfare |
 | --- | --- | --- |
-| Empty arena | Grooming, short walks | Default VNC / central-complex programs |
-| Sugar water | Approach, then PER | Sweet GRNs fire MN9; PAM writes reward |
-| Ethanol | Disinhibited walking | Flies seek fermenting fruit; OA / NPF rise |
-| Cocaine | Hypermotor circling | dDAT block → lingering DA onto descending neurons |
-| Doomscroll | Fixate, then skip | Kenyon-cell novelty habituates → locomotor skip |
-| Utopia | Locked PER | Appetitive arm clamped; aversive PPL1 silenced |
+| Empty arena | Grooming, short walks | floor |
+| Sugar water | Approach, then PER | high — a real meal |
+| Ethanol | Disinhibited walking | mid — seeking, not drinking |
+| Cocaine | Hypermotor circling | floor — wanting, no meal |
+| Doomscroll | Fixate, then skip | low — novelty is not consumption |
+| Utopia | Locked PER, calm | ceiling — meal that does not end |
 
 There is no quinine, shock, or other aversive protocol.
-
-The dynamics are a reduced rate model, not a leaky-integrate-and-fire pass over
-125 million synapses. Soma positions are real. Treat the numbers as an
-instrument, not a mind.
 
 ## Run
 
@@ -52,12 +60,16 @@ npm install
 npm run dev
 ```
 
-Opens on port 8080. `public/data/somata.bin` is a compact 16-byte-per-soma
-sample of MaleCNS body annotations.
+`public/data/somata.bin` is a compact 16-byte-per-soma sample of MaleCNS body
+annotations.
 
 ## References
 
-- Shiu, Sterne, et al. (2024). A leaky integrate-and-fire connectome model of the adult *Drosophila* brain. *bioRxiv* / *Nature*.
+- Marella, Mann, Scott (2012). Dopaminergic modulation of sucrose acceptance behavior in *Drosophila*. *Neuron*.
 - Burke, Huetteroth, et al. (2012). Layered reward signalling through octopamine and dopamine in *Drosophila*. *Nature*.
-- McClung & Hirsh (1998). Stereotypic behavioral responses to free-base cocaine in *Drosophila*.
+- Huetteroth / Yamagata et al. (2015). Sweet taste vs nutritional value in PAM subsets.
+- Aso et al. (2014). Mushroom body output neurons; valence map.
+- Bennett et al. (2021). Approach − avoidance MBON difference as valence.
+- Cohn, Morantte, Ruta (2015). Coordinated and compartmentalized dopamine.
+- McClung & Hirsh (1998). Cocaine responses in *Drosophila*.
 - MaleCNS v1.0, FlyEM / Google Research (2026).

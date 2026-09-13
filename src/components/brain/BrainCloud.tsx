@@ -111,7 +111,7 @@ export function BrainCloud({ somata, scale = 0.42 }: { somata: Somata; scale?: n
       for (let i = 0; i < 18; i++) rates[i] = engine.rates[i] ?? 0;
       u.uRates.value = rates;
       u.uFocus.value = focusCircuit ? 1 : 0;
-      u.uHedonic.value = engine.state.hedonic;
+      u.uHedonic.value = engine.state.welfare;
     }
   });
 
@@ -144,7 +144,7 @@ export function PathwayRibbons({
         ["oa", "pam"],
         ["pam", "kenyon"],
         ["kenyon", "mbon"],
-        ["mbon", "mn9"],
+        ["sugar", "mn9"],
       ] as const,
     [],
   );
@@ -168,7 +168,7 @@ export function PathwayRibbons({
       .filter((p): p is [number, number, number][] => p !== null);
   }, [centroids, keys]);
 
-  const hedonic = useProtocol((s) => s.snapshot.hedonic);
+  const welfare = useProtocol((s) => s.snapshot.welfare);
 
   return (
     <group scale={scale}>
@@ -178,7 +178,7 @@ export function PathwayRibbons({
           points={pts}
           color="#d6d2c8"
           transparent
-          opacity={0.12 + hedonic * 0.4}
+          opacity={0.12 + welfare * 0.4}
           lineWidth={1}
         />
       ))}
